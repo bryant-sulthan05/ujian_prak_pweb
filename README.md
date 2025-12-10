@@ -8,7 +8,7 @@ Proyek ini adalah aplikasi **Forum Diskusi** yang memungkinkan pengguna melakuka
 
 ### 1. Clone Repository
 ```bash
-git clone https://github.com/nama-user/nama-repo.git
+git clone https://github.com/bryant-sulthan05/ujian_prak_pweb.git
 ```
 
 Masuk ke folder project:
