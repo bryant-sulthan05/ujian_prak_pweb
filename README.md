@@ -81,7 +81,6 @@ Frontend membutuhkan backend aktif di:
 ```
 http://localhost:5000
 ```
-
 ---
 
 ## 📁 Struktur Project
@@ -110,5 +109,5 @@ project/
 
 ---
 
-## 🎉 Selesai!
-Project siap dijalankan secara lokal setelah mengikuti langkah-langkah di atas.
+## 📝 NOTES!
+Abaikan file gambar thumbnail.png
