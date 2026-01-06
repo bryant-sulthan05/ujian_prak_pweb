@@ -195,7 +195,7 @@ const Register = () => {
                             <FormGroup sx={{ mb: 2 }}>
                                 <TextField
                                     variant="outlined"
-                                    type="tel"
+                                    type="number"
                                     name="tlp"
                                     size="medium"
                                     fullWidth
