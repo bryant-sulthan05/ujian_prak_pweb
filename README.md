@@ -38,12 +38,7 @@ Contoh isi file:
 ```
 APP_PORT=5000
 SESS_SECRET=rahasia_session
-DB_HOST=localhost
-DB_USER=root
-DB_PASS=
-DB_NAME=nama_database
 ```
-
 ---
 
 ### 4. Jalankan Backend

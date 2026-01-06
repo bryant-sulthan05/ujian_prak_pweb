@@ -23,6 +23,7 @@ const Register = () => {
     const [apiError, setApiError] = useState('');
     const dispatch = useDispatch();
     const navigate = useNavigate();
+    const [showPassword, setShowPassword] = useState(false);
 
     const { isLoading, message } = useSelector((state) => state.auth);
 
@@ -218,7 +219,7 @@ const Register = () => {
                             <FormGroup sx={{ mb: 2 }}>
                                 <TextField
                                     variant="outlined"
-                                    type="password"
+                                    type={showPassword ? 'text' : 'password'}
                                     name="password"
                                     size="medium"
                                     fullWidth
@@ -235,6 +236,16 @@ const Register = () => {
                                                 borderColor: '#E0E0E0',
                                             },
                                         },
+                                    }}
+                                    InputProps={{
+                                        endAdornment: (
+                                            <Button
+                                                onClick={() => setShowPassword(!showPassword)}
+                                                size="small"
+                                            >
+                                                {showPassword ? 'Hide' : 'Show'}
+                                            </Button>
+                                        )
                                     }}
                                 />
                                 <Typography variant="caption" sx={{ mt: 1, color: 'text.secondary' }}>

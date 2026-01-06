@@ -18,7 +18,7 @@ const Footer = () => {
                 <Grid container spacing={4}>
                     <Grid item xs={12} md={4}>
                         <Typography variant="h6" sx={{ fontFamily: 'PT Sans', mb: 1 }}>
-                            Tentang Intelligentsia Guild
+                            Tentang Forum Tanya Jawab
                         </Typography>
                         <Typography variant="body2" color="text.secondary" sx={{ fontFamily: 'PT Sans', lineHeight: 1.8 }}>
                             Platform forum tanya jawab untuk berbagi pengetahuan dan membangun komunitas cerdas yang saling mendukung. Diskusi sehat, kontribusi positif, dan semangat belajar jadi prioritas utama kami.
@@ -45,7 +45,7 @@ const Footer = () => {
                 <Box sx={{ textAlign: 'center' }}>
                     <Typography variant="overline" color="text.secondary" sx={{ fontFamily: 'PT Sans', fontWeight: 400 }}>
                         Bryant
-                        &copy; {new Date().getFullYear()} Intelligentsia Guild. All rights reserved.
+                        &copy; {new Date().getFullYear()} All rights reserved.
                     </Typography>
                 </Box>
             </Container>

@@ -11,6 +11,7 @@ const ForgotPass = () => {
     const [otp, setOtp] = useState('');
     const [newPassword, setNewPassword] = useState('');
     const [confPassword, setConfPassword] = useState('');
+    const [showPassword, setShowPassword] = useState(false);
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
     const navigate = useNavigate();
@@ -100,31 +101,49 @@ const ForgotPass = () => {
                         </Button>
                     </>
                 )}
-
                 {step === 3 && (
                     <>
                         <TextField
                             label="Password Baru"
-                            type="password"
+                            type={showPassword ? 'text' : 'password'}
                             fullWidth
                             value={newPassword}
                             onChange={(e) => setNewPassword(e.target.value)}
                             sx={{ mb: 2 }}
+                            InputProps={{
+                                endAdornment: (
+                                    <Button
+                                        onClick={() => setShowPassword(!showPassword)}
+                                        size="small"
+                                    >
+                                        {showPassword ? 'Hide' : 'Show'}
+                                    </Button>
+                                )
+                            }}
                         />
                         <TextField
                             label="Konfirmasi Password"
-                            type="password"
+                            type={showPassword ? 'text' : 'password'}
                             fullWidth
                             value={confPassword}
                             onChange={(e) => setConfPassword(e.target.value)}
                             sx={{ mb: 2 }}
+                            InputProps={{
+                                endAdornment: (
+                                    <Button
+                                        onClick={() => setShowPassword(!showPassword)}
+                                        size="small"
+                                    >
+                                        {showPassword ? 'Hide' : 'Show'}
+                                    </Button>
+                                )
+                            }}
                         />
                         <Button fullWidth variant="contained" onClick={handleResetPassword}>
                             Reset Password
                         </Button>
                     </>
                 )}
-
                 {step === 4 && (
                     <Typography align="center" sx={{ mt: 2 }}>
                         Password berhasil direset. Silakan login kembali.

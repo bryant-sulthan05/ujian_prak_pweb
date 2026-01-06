@@ -3,6 +3,7 @@ import argon2 from 'argon2';
 import { Op } from 'sequelize';
 import path from 'path';
 import nodemailer from 'nodemailer';
+import fs from 'fs';
 
 const otpStore = new Map();
 
@@ -25,81 +26,113 @@ export const cekProfile = async (req, res) => {
 }
 
 export const editProfile = async (req, res) => {
-    const user = await Users.findOne({
-        where: {
-            id: req.userId
-        }
-    });
-    if (!user) return res.status(404).json({ msg: 'User tidak ditemukan' });
-
-    const { name, username, password, confPassword, mail, phone } = req.body;
-    const file = req.files ? req.files.file : null;
-    const size = file.data.length;
-    const ext = path.extname(file.name);
-    const uniqueIdentifier = Date.now();
-    const fileName = `${file.md5}_${uniqueIdentifier}${ext}`;
-    const url = `${req.protocol}://${req.get("host")}/img/profile/${fileName}`;
-    const allowedType = ['.jpeg', '.jpg', '.png'];
-    if (!allowedType.includes(ext.toLowerCase())) return res.status(422).json({ msg: "Gambar harus berekstensi .jpeg, .jpg, dan .png" });
-
-    if (size > 5000000) return res.status(422).json({ msg: "Ukuran file maksimal 5mb" });
-
-    let email = user.email;
-    let tlp = user.tlp;
-    let hashPassword = user.password;
-    if (password) {
-        const passwordRegex = /^(?=.*[A-Z])(?=.*\d)(?=.*[@#$!&*]).{8,}$/;
-        if (!passwordRegex.test(password)) {
-            return res.status(400).json({ msg: 'Password setidaknya mengandung satu huruf kapital, angka, dan simbol (@,#,$,!,&,*), serta memiliki panjang minimal 8 karakter' });
-        }
-        if (password !== confPassword) {
-            return res.status(400).json({ msg: 'Password dan konfirmasi password tidak sama' });
-        }
-        hashPassword = await argon2.hash(password);
-    }
-    if (mail || phone) {
-        const emailUser = await Users.findOne({
-            attributes: ['email', 'tlp'],
-            where: {
-                id: { [Op.not]: user.id },
-                [Op.or]: [{ email: mail }, { tlp: phone }]
-            }
-        });
-        if (emailUser) {
-            if (mail === emailUser.email) {
-                return res.status(422).json({ msg: 'Email sudah digunakan, gunakan email lain!' });
-            }
-            if (phone === emailUser.tlp) {
-                return res.status(422).json({ msg: 'No. Hp sudah digunakan, gunakan No. Hp lain!' });
-            }
-        }
-        if (mail) email = mail;
-        if (phone) tlp = phone;
-    }
-
-    file.mv(`./public/img/profile/${fileName}`, async (err) => {
-        if (err) return res.status(500).json({ msg: err.message });
-    });
     try {
+        const user = await Users.findOne({
+            where: { id: req.userId }
+        });
+
+        if (!user) {
+            return res.status(404).json({ msg: "User tidak ditemukan" });
+        }
+
+        const {
+            name,
+            username,
+            password,
+            confPassword,
+            email,
+            tlp
+        } = req.body;
+
+        let hashPassword = user.password;
+
+        if (password) {
+            const passwordRegex = /^(?=.*[A-Z])(?=.*\d)(?=.*[@#$!&*]).{8,}$/;
+
+            if (!passwordRegex.test(password)) {
+                return res.status(400).json({
+                    msg: "Password minimal 8 karakter, mengandung huruf kapital, angka, dan simbol"
+                });
+            }
+
+            if (password !== confPassword) {
+                return res.status(400).json({
+                    msg: "Password dan konfirmasi password tidak sama"
+                });
+            }
+
+            hashPassword = await argon2.hash(password);
+        }
+
+        if (email || tlp) {
+            const checkUser = await Users.findOne({
+                where: {
+                    id: { [Op.not]: user.id },
+                    [Op.or]: [
+                        email ? { email } : null,
+                        tlp ? { tlp: tlp } : null
+                    ].filter(Boolean)
+                }
+            });
+
+            if (checkUser) {
+                if (email && checkUser.email === email) {
+                    return res.status(422).json({ msg: "Email sudah digunakan" });
+                }
+                if (tlp && checkUser.tlp === tlp) {
+                    return res.status(422).json({ msg: "No. HP sudah digunakan" });
+                }
+            }
+        }
+
+        let fileName = user.image;
+        let url = user.url;
+
+        if (req.files && req.files.file) {
+            const file = req.files.file;
+            const ext = path.extname(file.name);
+            const size = file.data.length;
+            const allowedType = [".png", ".jpg", ".jpeg"];
+
+            if (!allowedType.includes(ext.toLowerCase())) {
+                return res.status(422).json({ msg: "Format gambar tidak valid" });
+            }
+
+            if (size > 5000000) {
+                return res.status(422).json({ msg: "Ukuran gambar maksimal 5MB" });
+            }
+
+            if (user.image) {
+                const oldPath = `./public/img/profile/${user.image}`;
+                if (fs.existsSync(oldPath)) {
+                    fs.unlinkSync(oldPath);
+                }
+            }
+
+            const unique = Date.now();
+            fileName = `${file.md5}_${unique}${ext}`;
+            url = `${req.protocol}://${req.get("host")}/img/profile/${fileName}`;
+
+            await file.mv(`./public/img/profile/${fileName}`);
+        }
+
         await Users.update({
-            name: name,
-            username: username,
+            name: name ?? user.name,
+            username: username ?? user.username,
             password: hashPassword,
             image: fileName,
             url: url,
-            email: email,
-            tlp: tlp
-        },
-            {
-                where: {
-                    id: user.id
-                }
-            });
-        res.status(200).json({ msg: 'Update berhasil' });
+            email: email ?? user.email,
+            tlp: tlp ?? user.tlp
+        }, {
+            where: { id: user.id }
+        });
+
+        res.status(200).json({ msg: "Profil berhasil diperbarui" });
     } catch (error) {
-        res.status(400).json({ msg: error.message });
+        res.status(500).json({ msg: error.message });
     }
-}
+};
 
 export const regUser = async (req, res) => {
     const { name, username, password, confPassword, email, tlp } = req.body;

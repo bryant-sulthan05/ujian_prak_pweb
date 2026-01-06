@@ -23,6 +23,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import IconButton from '@mui/material/IconButton';
 import Footer from './Layout/Footer';
+
 const TestProfile = () => {
     const [title, setTitle] = useState('')
     const [question, setQuestion] = useState('')
@@ -605,7 +606,7 @@ const TestProfile = () => {
                                 <TextField name="phone" label="No. HP" fullWidth sx={{ mb: 2 }} value={editProfile.phone} onChange={handleEditProfileChange} />
                                 <Box sx={{ mb: 2 }}>
                                     <Button variant="contained" component="label">
-                                        Upload Foto (Opsional)
+                                        Upload Foto
                                         <input type="file" hidden name="file" onChange={handleEditProfileChange} accept="image/*" />
                                     </Button>
                                 </Box>

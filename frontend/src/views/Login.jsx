@@ -14,6 +14,7 @@ const Login = () => {
     const [password, setPassword] = useState("");
     const dispatch = useDispatch();
     const navigate = useNavigate();
+    const [showPassword, setShowPassword] = useState(false);
     const { user, isSuccess, isLoading } = useSelector((state) => state.auth);
 
     useEffect(() => {
@@ -75,7 +76,7 @@ const Login = () => {
                             <FormGroup sx={{ mb: 2 }}>
                                 <TextField
                                     variant="outlined"
-                                    type="password"
+                                    type={showPassword ? 'text' : 'password'}
                                     size="medium"
                                     fullWidth
                                     value={password}
@@ -89,6 +90,16 @@ const Login = () => {
                                                 borderColor: '#E0E0E0',
                                             },
                                         },
+                                    }}
+                                    InputProps={{
+                                        endAdornment: (
+                                            <Button
+                                                onClick={() => setShowPassword(!showPassword)}
+                                                size="small"
+                                            >
+                                                {showPassword ? 'Hide' : 'Show'}
+                                            </Button>
+                                        )
                                     }}
                                 />
                             </FormGroup>
